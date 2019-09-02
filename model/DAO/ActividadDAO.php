@@ -8,7 +8,7 @@ class ActividadDAO{
 
 }
     public function consultar($nombre){
-        $sentencia = $this->conexion->prepare("select * from actividad");
+        $sentencia = $this->conexion->prepare("select * from actividad where act_estado = 'H'");
         $arrayParrametr = array();
         $sentencia->execute($arrayParrametr);
 
@@ -20,7 +20,7 @@ class ActividadDAO{
         try{
 $sentencia = $this->conexion->prepare("insert into actividad (act_nombre) values(?)");
 $parametros = array($act->getAct_nombre());
-$setencia->execute($parametros);
+$sentencia->execute($parametros);
 return $sentencia->rowCount();
 
     }catch(Exception $e){
@@ -28,9 +28,9 @@ return $sentencia->rowCount();
     }
 
     }
-    public function editar(ActidiadDTO $act){
+    public function editar(ActividadDTO $act){
         try{
-            $setencia = $this->conexion->prepare("update actividad set act_nombre = ? where act_nombre = ?");
+            $sentencia = $this->conexion->prepare("update actividad set act_nombre = ? where act_idActividad = ?");
             $parametros = array($act->getAct_nombre(), $act->getAct_idActividad());
             $sentencia->execute($parametros);
             return  $sentencia->rowCount();
@@ -41,13 +41,25 @@ return $sentencia->rowCount();
     }
     public function eliminar($id){
         try{
-            $sentencia = $this->conexion->prepare("update actividad set act_estado = D where act_idActividad = ?");
+            $sentencia = $this->conexion->prepare("update actividad set act_estado = 'D' where act_idActividad = ?");
             $parametros = array($id);
             $sentencia->execute($parametros);
             return $sentencia->rowCount();
         }
         catch(Exception $e){
             die($e->getMessage());
+        }
+    }
+
+    public function consultarPorId($id) {
+        $sentencia = $this->conexion->prepare("select * from actividad where act_idActividad=?");
+        $parametros = array($id);
+        $sentencia->execute($parametros);
+        $resultados = $sentencia->fetchAll(PDO::FETCH_OBJ);
+        if (count($resultados) > 0) {
+            return $resultados[0]; 
+        } else {
+            return $resultados;
         }
     }
 
